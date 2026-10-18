@@ -1179,6 +1179,38 @@ body {
   border-color: #cadbd0;
   background: #fcfefc;
 }
+.password-toggle-btn {
+  position: absolute;
+  top: 50%;
+  right: 12px;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  padding: 4px;
+  margin: 0;
+  cursor: pointer;
+  color: #78917e;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+  transition: color 0.15s ease;
+}
+.password-toggle-btn:hover {
+  color: var(--green);
+}
+.input-wrap .password-toggle-btn svg {
+  position: static !important;
+  transform: none !important;
+  left: auto !important;
+  top: auto !important;
+  width: 18px;
+  height: 18px;
+  pointer-events: none;
+}
+.auth-card .password-wrap input {
+  padding-right: 42px;
+}
 .auth-submit {
   min-height: 50px;
   margin-top: 4px !important;

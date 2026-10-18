@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { useState } from "react";
 import {
+  Eye,
+  EyeOff,
   LoaderCircle,
   LockKeyhole,
   Mail,
@@ -15,6 +17,7 @@ import { authClient } from "@/lib/auth-client";
 
 export function AuthForm({ mode }: { mode: "signin" | "signup" }) {
   const signup = mode === "signup";
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState<"email" | "google" | "github" | null>(
     null,
   );
@@ -146,16 +149,24 @@ export function AuthForm({ mode }: { mode: "signin" | "signup" }) {
           </label>
           <label>
             <span>পাসওয়ার্ড</span>
-            <div className="input-wrap">
+            <div className="input-wrap password-wrap">
               <LockKeyhole aria-hidden="true" />
               <input
                 name="password"
-                type="password"
+                type={showPassword ? "text" : "password"}
                 minLength={8}
                 required
                 autoComplete={signup ? "new-password" : "current-password"}
                 placeholder="কমপক্ষে ৮ অক্ষর"
               />
+              <button
+                type="button"
+                className="password-toggle-btn"
+                onClick={() => setShowPassword(!showPassword)}
+                aria-label={showPassword ? "পাসওয়ার্ড লুকান" : "পাসওয়ার্ড দেখুন"}
+              >
+                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+              </button>
             </div>
           </label>
           <button
