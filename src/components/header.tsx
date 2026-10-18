@@ -1,11 +1,14 @@
 "use client";
+
 import Image from "next/image";
 import Link from "next/link";
 import { Menu, X } from "lucide-react";
-import { useState, useSyncExternalStore } from "react";
+import { useEffect, useState, useSyncExternalStore } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { authClient } from "@/lib/auth-client";
+import { bnNumber } from "@/lib/format";
 import toast from "react-hot-toast";
+
 const subscribe = () => () => {};
 const getDate = () =>
   new Intl.DateTimeFormat("bn-BD", {
@@ -15,6 +18,7 @@ const getDate = () =>
     year: "numeric",
     timeZone: "Asia/Dhaka",
   }).format(new Date());
+
 const categories = [
   ["chal", "চাল"],
   ["dal", "ডাল"],
@@ -25,17 +29,70 @@ const categories = [
   ["dim-dui", "ডিম-দুধ"],
   ["mosla", "মসলা"],
 ];
+
+interface TickerItem {
+  emoji: string;
+  name: string;
+  price: number;
+  unit: string;
+  dir: "up" | "down" | "flat";
+  pct: number;
+}
+
+const initialTickerItems: TickerItem[] = [
+  { emoji: "🍚", name: "মিনিকেট চাল", price: 99, unit: "কেজি", dir: "down", pct: 2.9 },
+  { emoji: "🧅", name: "পেঁয়াজ", price: 68, unit: "কেজি", dir: "up", pct: 4.6 },
+  { emoji: "🥚", name: "ডিম", price: 158, unit: "ডজন", dir: "up", pct: 3.9 },
+  { emoji: "🧄", name: "রসুন", price: 125, unit: "কেজি", dir: "down", pct: 7.4 },
+  { emoji: "🫚", name: "আদা", price: 85, unit: "কেজি", dir: "up", pct: 9.0 },
+  { emoji: "🐟", name: "রুই মাছ", price: 340, unit: "কেজি", dir: "down", pct: 2.1 },
+];
+
 export function Header() {
   const [open, setOpen] = useState(false);
+  const [tickerItems, setTickerItems] = useState<TickerItem[]>(initialTickerItems);
   const date = useSyncExternalStore(subscribe, getDate, () => "আজকের বাজার");
   const router = useRouter();
   const pathname = usePathname();
   const { data: session, isPending } = authClient.useSession();
+
+  useEffect(() => {
+    fetch("https://api.api-store.workers.dev/api/bazardor/products")
+      .then((r) => r.json())
+      .then((data) => {
+        if (Array.isArray(data) && data.length) {
+          const movers = data
+            .filter((p) => p.change && p.change.pct !== 0)
+            .slice(0, 10)
+            .map((p) => ({
+              emoji: p.image || "🛒",
+              name: p.nameBn,
+              price: p.today,
+              unit:
+                p.unit === "kg"
+                  ? "কেজি"
+                  : p.unit === "litre"
+                    ? "লিটার"
+                    : p.unit === "dozen"
+                      ? "ডজন"
+                      : "পিস",
+              dir: (p.change.dir as "up" | "down" | "flat") || "flat",
+              pct: Math.abs(p.change.pct),
+            }));
+          if (movers.length) setTickerItems(movers);
+        }
+      })
+      .catch(() => {
+        // Retain fallback items if API is unreachable
+      });
+  }, []);
+
   async function logout() {
     await authClient.signOut();
     toast.success("সফলভাবে সাইন আউট হয়েছে");
     router.push("/");
   }
+
   return (
     <header className="site-header">
       <div className="topbar container">
@@ -83,6 +140,7 @@ export function Header() {
           <button
             className="menu-btn"
             aria-label="মেনু"
+            aria-expanded={open}
             onClick={() => setOpen(!open)}
           >
             {open ? <X /> : <Menu />}
@@ -116,9 +174,19 @@ export function Header() {
       )}
       <div className="ticker">
         <div>
-          🍚 মিনিকেট চাল ৯৯ টাকা/কেজি <em>▼ ২.৯%</em>　 🧅 পেঁয়াজ ৬৮ টাকা/কেজি{" "}
-          <b>▲ ৪.৬%</b>　 🥚 ডিম ১৫৮ টাকা/ডজন <b>▲ ৩.৯%</b>　 🧄 রসুন ১২৫
-          টাকা/কেজি <em>▼ ৭.৪%</em>　 🫚 আদা ৮৫ টাকা/কেজি <b>▲ ৯.০%</b>
+          {tickerItems.map((item, i) => (
+            <span key={i} className="ticker-item">
+              {item.emoji} {item.name} {bnNumber(item.price)} টাকা/{item.unit}{" "}
+              {item.dir === "up" ? (
+                <b>▲ {bnNumber(item.pct)}%</b>
+              ) : item.dir === "down" ? (
+                <em>▼ {bnNumber(item.pct)}%</em>
+              ) : (
+                <span>• ০.০%</span>
+              )}
+              {"　"}
+            </span>
+          ))}
         </div>
       </div>
     </header>
