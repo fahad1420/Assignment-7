@@ -13,6 +13,10 @@ export default async function Home() {
     .filter((p) => p.change.dir === "down")
     .sort((a, b) => a.change.pct - b.change.pct)
     .slice(0, 6);
+  const divisionsCount = new Set(
+    products.flatMap((p) => p.markets.map((m) => m.division)),
+  ).size;
+
   return (
     <>
       <section className="hero">
@@ -40,7 +44,7 @@ export default async function Home() {
                 <b>১২</b> টি বাজার অন্তর্ভুক্ত
               </span>
               <span>
-                <b>৮</b> টি বিভাগের তথ্য
+                <b>{divisionsCount.toLocaleString("bn-BD")}</b> টি বিভাগের তথ্য
               </span>
             </div>
           </div>

@@ -1,10 +1,16 @@
 import Link from "next/link";
 import Image from "next/image";
+import type { Metadata } from "next";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { Mail, UserRound } from "lucide-react";
 import { auth } from "@/lib/auth";
 import { ensureMongoConnection } from "@/lib/mongodb";
+
+export const metadata: Metadata = {
+  title: "আমার প্রোফাইল - বাজার দর",
+  description: "আপনার বাজার দর প্রোফাইল তথ্য দেখুন।",
+};
 
 export const dynamic = "force-dynamic";
 export default async function Profile() {

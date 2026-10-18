@@ -1,7 +1,22 @@
 import Link from "next/link";
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getCategory } from "@/lib/products";
 import { CategoryProducts } from "@/components/category-products";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const { slug } = await params;
+  const { category } = await getCategory(slug);
+  if (!category) return { title: "বিভাগ পাওয়া যায়নি" };
+  return {
+    title: `${category.nameBn} বিভাগ - বাজার দর`,
+    description: `${category.nameBn} বিভাগের নিত্যপণ্যের আজকের দাম, সর্বনিম্ন-সর্বাধিক দাম এবং মূল্য পরিবর্তন।`,
+  };
+}
 export default async function CategoryPage({
   params,
 }: {

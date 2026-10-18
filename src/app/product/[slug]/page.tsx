@@ -1,9 +1,24 @@
 import Link from "next/link";
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { MapPin, TrendingUp } from "lucide-react";
 import { getProduct } from "@/lib/products";
 import { bnNumber, unitLabel } from "@/lib/format";
 import { ChangeBadge } from "@/components/product-card";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const { slug } = await params;
+  const product = await getProduct(slug);
+  if (!product) return { title: "পণ্য পাওয়া যায়নি" };
+  return {
+    title: `${product.nameBn} - বাজার দর`,
+    description: `${product.nameBn}-এর আজকের দাম ${bnNumber(product.today)} টাকা। বিভিন্ন বাজারের সর্বনিম্ন, সর্বাধিক ও গড় মূল্য তুলনা।`,
+  };
+}
 export default async function ProductDetails({
   params,
 }: {
