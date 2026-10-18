@@ -8,27 +8,30 @@ The application aggregates real-time price reports across 8 divisions and 12 maj
 
 ## Live Links
 
-- **Production Deployment:** [https://assignment-7.vercel.app](https://assignment-7.vercel.app) *(or your deployed Vercel URL)*
+- **Production Deployment:** [https://assignment-7-psi-three.vercel.app](https://assignment-7-psi-three.vercel.app)
 - **GitHub Repository:** [https://github.com/fahad1420/Assignment-7](https://github.com/fahad1420/Assignment-7)
 
 ---
 
 ## Key Features
 
-- **Daily Market Summary & Price Ticker:** Live headline ticker and hero overview showing key commodity price changes.
+- **Daily Market Summary & Dynamic Price Ticker:** Real-time headline ticker and hero overview showing top commodity price movers fetched live from the market API.
 - **Price Fluctuation Sections:** Automatically sorted sections highlighting products with daily price increases (▲) and price drops (▼).
-- **Comprehensive Product Catalog:** Browse complete catalog of grocery staples including rice, lentils, edible oils, vegetables, fish, meat, eggs, dairy, and spices.
-- **Category Filtering & Sorting:** Filter products by category and sort dynamically by price (lowest to highest, highest to lowest).
+- **Comprehensive Product Catalog:** Complete catalog of grocery staples including rice, lentils, edible oils, vegetables, fish, meat, eggs, dairy, and spices.
+- **Category Filtering & Dynamic Price Sorting:** Filter products by category and sort dynamically by price (lowest to highest, highest to lowest).
 - **Detailed Market Analysis:** Dynamic product detail pages (`/product/[slug]`) comparing prices across different regional markets with minimum, maximum, and average calculations.
 - **Multi-Provider Authentication:**
-  - Secure Email/Password registration and sign-in.
+  - Secure Email/Password registration and sign-in with password visibility toggle.
   - Social authentication with **Google OAuth** and **GitHub OAuth**.
   - Secure automatic account linking across providers sharing the same email.
+- **Edge Middleware Route Protection:**
+  - High-performance Edge Middleware (`src/middleware.ts`) intercepting unauthenticated access to `/product/:path*`, `/profile`, and `/profile/update`.
+  - Redirects unauthenticated requests immediately to `/signin?reason=protected` (HTTP 307) without streaming any protected page HTML over the wire.
 - **Protected User Profile:**
-  - Server-side route protection redirecting unauthenticated visitors to `/signin?reason=protected`.
   - Profile overview displaying name, email, avatar image (supporting GitHub and Google remote avatars), and a fallback avatar.
-  - Profile update page (`/profile/update`) to update display name.
+  - Profile update page (`/profile/update`) with controlled input state to update display name.
 - **Resilient Fallback API Integration:** Robust multi-endpoint fallback architecture ensuring zero-downtime data fetching across primary and backup sources.
+- **Error Boundary & SEO:** Localized Bengali error boundary (`src/app/error.tsx`) and dynamic SEO metadata generation across products and categories.
 - **Responsive & Accessible UI:** Optimized for mobile, tablet, and desktop screens with semantic HTML, loading skeletons, and interactive toast feedback.
 
 ---
@@ -183,7 +186,7 @@ npm run build
 4. Configure all environment variables in the Vercel Dashboard under **Project Settings > Environment Variables**:
    - `MONGODB_URI`
    - `BETTER_AUTH_SECRET`
-   - `BETTER_AUTH_URL` (set to your production Vercel domain, e.g. `https://assignment-7.vercel.app`)
+   - `BETTER_AUTH_URL` (set to your production Vercel domain, e.g. `https://assignment-7-psi-three.vercel.app`)
    - `GOOGLE_CLIENT_ID`
    - `GOOGLE_CLIENT_SECRET`
    - `GITHUB_CLIENT_ID`
