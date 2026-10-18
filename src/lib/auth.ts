@@ -1,6 +1,7 @@
 import { betterAuth } from "better-auth/minimal";
 import { mongodbAdapter } from "better-auth/adapters/mongodb";
 import { db } from "./mongodb";
+import { credentialLinkingPlugin } from "./credential-plugin";
 
 const isProduction = process.env.NODE_ENV === "production";
 const vercelURL = process.env.VERCEL_PROJECT_PRODUCTION_URL
@@ -16,6 +17,7 @@ const baseURL =
 export const auth = betterAuth({
   database: mongodbAdapter(db, { transaction: false }),
   baseURL,
+  plugins: [credentialLinkingPlugin()],
   account: {
     // Keep OAuth state encrypted in a short-lived browser cookie. This avoids
     // state records being lost between Vercel serverless instances.
